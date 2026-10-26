@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Pujiverse Tech: every gadget that runs on power, from the first spark to today and the future. From the @pujiversetech YouTube channel.">
+<title>Pujiverse Tech</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: brand masthead → sticky category rail → per-category panel with "Gadgets today" / "Timeline" views */
+:root{
+  --bg:#EDF0F3; --surface:#FFFFFF; --ink:#14202B; --muted:#586674; --line:#D2D9E0;
+  --accent:#B86E0E; --accent-soft:#F6E7D0; --chip:#E3E8ED;
+  --batt:#2F7D5B; --plug:#3A5FA8; --both:#7A4BA0;
+  --display:"Chakra Petch","Segoe UI",system-ui,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0E141A; --surface:#161F28; --ink:#E5EBF0; --muted:#93A1AE; --line:#26323E;
+  --accent:#F0A63A; --accent-soft:#3A2B14; --chip:#1E2934;
+  --batt:#5FC39A; --plug:#7FA3EA; --both:#C29BE6; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E141A; --surface:#161F28; --ink:#E5EBF0; --muted:#93A1AE; --line:#26323E;
+  --accent:#F0A63A; --accent-soft:#3A2B14; --chip:#1E2934;
+  --batt:#5FC39A; --plug:#7FA3EA; --both:#C29BE6; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.55 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:1180px;margin:0 auto}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* Masthead */
+header.mast{padding-block:28px 18px;display:flex;flex-wrap:wrap;gap:18px 32px;align-items:flex-end;justify-content:space-between;border-bottom:1px solid var(--line)}
+.brand{display:flex;flex-direction:column;gap:6px;min-width:0}
+.brand .eyebrow{font:500 12px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px}
+.led{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+@media (prefers-reduced-motion:no-preference){.led{animation:pulse 2.4s ease-in-out infinite}}
+@keyframes pulse{50%{box-shadow:0 0 0 6px transparent}}
+h1{font:700 clamp(34px,6vw,56px)/1 var(--display);letter-spacing:.01em;margin:0;text-wrap:balance}
+h1 span{color:var(--accent)}
+.tagline{margin:0;color:var(--muted);max-width:52ch}
+.stats{display:flex;gap:24px;font-family:var(--mono);font-variant-numeric:tabular-nums}
+.stat b{display:block;font:600 26px/1.1 var(--display);color:var(--ink)}
+.stat small{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+
+/* Category rail */
+nav.rail{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:12px;border-bottom:1px solid var(--line)}
+.railrow{display:flex;gap:10px;align-items:center}
+.tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin;padding-bottom:4px;flex:1;min-width:0}
+.tab{flex:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:500 13px/1 var(--body);padding:9px 12px;border-radius:6px;cursor:pointer;display:flex;gap:8px;align-items:center;white-space:nowrap}
+.tab .n{font:500 11px/1 var(--mono);color:var(--muted)}
+.tab:hover{border-color:var(--accent)}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tab[aria-selected="true"] .n{color:var(--accent)}
+.search{flex:none;width:min(240px,40vw)}
+.search input{width:100%;font:14px var(--body);padding:9px 12px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink)}
+
+/* Panel */
+main{padding-block:26px 60px}
+.phead{display:flex;flex-wrap:wrap;justify-content:space-between;gap:14px;align-items:flex-end;margin-bottom:18px}
+.phead h2{font:600 30px/1.1 var(--display);margin:0 0 6px}
+.phead p{margin:0;color:var(--muted);max-width:62ch}
+.views{display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;flex:none}
+.views button{border:0;background:var(--surface);color:var(--muted);font:500 13px var(--body);padding:9px 14px;cursor:pointer}
+.views button+button{border-left:1px solid var(--line)}
+.views button[aria-pressed="true"]{background:var(--accent-soft);color:var(--ink)}
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.filters button{border:1px solid var(--line);background:transparent;color:var(--muted);font:500 12px var(--mono);padding:6px 10px;border-radius:99px;cursor:pointer}
+.filters button[aria-pressed="true"]{border-color:var(--ink);color:var(--ink)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.card .top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.card h3{font:600 17px/1.25 var(--display);margin:0}
+.card p{margin:0;font-size:14px}
+.ex{font:12px/1.5 var(--mono);color:var(--muted);margin-top:auto;padding-top:8px;border-top:1px dashed var(--line)}
+.ex b{font-weight:500;color:var(--ink)}
+.tag{flex:none;font:500 10.5px/1 var(--mono);letter-spacing:.04em;padding:5px 7px;border-radius:4px;background:var(--chip);color:var(--muted);display:inline-flex;gap:5px;align-items:center;white-space:nowrap}
+.tag i{width:7px;height:7px;border-radius:2px;background:currentColor}
+.tag.Battery{color:var(--batt)} .tag.Plug-in{color:var(--plug)} .tag.Both{color:var(--both)}
+.cat{font:500 11px var(--mono);color:var(--accent);letter-spacing:.06em;text-transform:uppercase}
+.empty{padding:40px 20px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:8px}
+
+/* Timeline */
+.tl{position:relative;padding-left:28px;display:flex;flex-direction:column;gap:16px}
+.tl::before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.tlitem{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px}
+.tlitem::before{content:"";position:absolute;left:-26px;top:18px;width:12px;height:12px;border-radius:50%;background:var(--bg);border:2px solid var(--accent)}
+.tlitem .yr{font:600 20px/1 var(--display);color:var(--accent)}
+.tlitem h4{margin:6px 0 4px;font:600 16px var(--body)}
+.tlitem p{margin:0;color:var(--muted);font-size:14px}
+.soon{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:28px;display:grid;gap:14px;max-width:720px}
+.soon h3{font:600 22px/1.2 var(--display);margin:0;text-wrap:balance}
+.soon p{margin:0;color:var(--muted)}
+.eras{display:flex;flex-wrap:wrap;gap:6px}
+.eras span{font:12px var(--mono);padding:5px 9px;border-radius:4px;background:var(--chip);color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font:12px var(--mono);color:var(--muted)}
+footer{border-top:1px solid var(--line);padding-block:20px 30px;color:var(--muted);font-size:13px;display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:space-between}
+
+@media (max-width:560px){.railrow{flex-direction:column;align-items:stretch}.search{width:100%}.tabs{width:100%}}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+<header class="mast">
+  <div class="brand">
+    <div class="eyebrow"><span class="led" aria-hidden="true"></span>@pujiversetech · Past · Present · Future</div>
+    <h1>PUJIVERSE <span>TECH</span></h1>
+    <p class="tagline">Every gadget that runs on power, from the first spark to the devices in your pocket today, and where they go next.</p>
+  </div>
+  <div class="stats" id="stats"></div>
+</header>
+
+<nav class="rail" aria-label="Categories">
+  <div class="railrow">
+    <div class="tabs" id="tabs" role="tablist"></div>
+    <div class="search"><input id="q" type="search" placeholder="Search all gadgets" aria-label="Search all gadgets"></div>
+  </div>
+</nav>
+
+<main id="main"></main>
+
+<footer>
+  <span>Pujiverse Tech · part of the Pujiverse Network</span>
+  <span>Watch the series on YouTube: <a href="https://www.youtube.com/@pujiversetech" target="_blank" rel="noopener">@pujiversetech</a></span>
+</footer>
+</div>
+
+<script src="data.js"></script>
+<script>
+
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const ids = CATEGORIES.map(c => c.id);
+const total = CATEGORIES.reduce((a,c)=>a+c.items.length,0);
+let state = {cat: ids.includes(location.hash.slice(1)) ? location.hash.slice(1) : "phones", view:"now", power:"All", q:""};
+
+$("#stats").innerHTML = `
+  <div class="stat"><b>${CATEGORIES.length}</b><small>Categories</small></div>
+  <div class="stat"><b>${total}</b><small>Gadget types</small></div>
+  <div class="stat"><b>1876</b><small>Timeline starts</small></div>`;
+
+function renderTabs(){
+  $("#tabs").innerHTML = CATEGORIES.map(c =>
+    `<button class="tab" role="tab" id="tab-${c.id}" aria-selected="${!state.q && c.id===state.cat}" data-id="${c.id}">${esc(c.name)}<span class="n">${c.items.length}</span></button>`).join("");
+}
+const tagLabel = p => p==="Both" ? "Battery + Plug-in" : p;
+function card(it, catName){
+  const [name,power,about,ex] = it;
+  return `<article class="card">
+    ${catName ? `<span class="cat">${esc(catName)}</span>` : ""}
+    <div class="top"><h3>${esc(name)}</h3><span class="tag ${power}"><i></i>${esc(tagLabel(power))}</span></div>
+    <p>${esc(about)}</p>
+    <div class="ex"><b>Examples:</b> ${esc(ex)}</div></article>`;
+}
+
+function render(){
+  renderTabs();
+  const m = $("#main");
+  if (state.q){
+    const q = state.q.toLowerCase();
+    const hits = CATEGORIES.flatMap(c => c.items.filter(i => i.join(" ").toLowerCase().includes(q)).map(i=>[i,c.name]));
+    m.innerHTML = `<div class="phead"><div><h2>Search results</h2><p>${hits.length} gadget type${hits.length===1?"":"s"} match “${esc(state.q)}”.</p></div></div>
+      ${hits.length ? `<div class="grid">${hits.map(([i,n])=>card(i,n)).join("")}</div>` : `<div class="empty">Nothing matches yet. Try another word, like “battery” or “Samsung”.</div>`}`;
+    return;
+  }
+  const c = CATEGORIES.find(x=>x.id===state.cat);
+  const powers = ["All", ...new Set(c.items.map(i=>i[1]))];
+  if (!powers.includes(state.power)) state.power = "All";
+  const items = c.items.filter(i => state.power==="All" || i[1]===state.power);
+  const tl = TIMELINES[c.id] || [];
+  let body;
+  if (state.view==="now"){
+    body = `${powers.length>2 ? `<div class="filters" aria-label="Filter by power source">${powers.map(p=>`<button data-p="${p}" aria-pressed="${p===state.power}">${esc(p==="All"?"All":tagLabel(p))}</button>`).join("")}</div>`:""}
+      <div class="grid">${items.map(i=>card(i)).join("")}</div>`;
+  } else if (tl.length){
+    body = `<div class="tl">${tl.map(e=>`<div class="tlitem"><div class="yr">${esc(e.year)}</div><h4>${esc(e.title)}</h4><p>${esc(e.text||"")}</p></div>`).join("")}</div>`;
+  } else {
+    const first = c.id==="phones" ? "From Alexander Graham Bell's telephone in 1876 to today's foldable, satellite-connected smartphones." : `The full story of ${c.name.toLowerCase()}, from the first invention to what comes next.`;
+    body = `<div class="soon"><span class="cat">Timeline · in production</span>
+      <h3>${esc(first)}</h3>
+      <p>This timeline will be filled in alongside the @pujiversetech episode. Planned eras:</p>
+      <div class="eras">${c.eras.map(e=>`<span>${esc(e)}</span>`).join("")}<span>The future</span></div></div>`;
+  }
+  m.innerHTML = `<div class="phead"><div><h2>${esc(c.name)}</h2><p>${esc(c.intro)}</p></div>
+    <div class="views" role="group" aria-label="View">
+      <button data-v="now" aria-pressed="${state.view==="now"}">Gadgets today</button>
+      <button data-v="tl" aria-pressed="${state.view==="tl"}">Timeline</button></div></div>${body}`;
+}
+
+$("#tabs").addEventListener("click", e => {
+  const b = e.target.closest(".tab"); if(!b) return;
+  state.cat=b.dataset.id; state.power="All"; state.q=""; $("#q").value="";
+  try{ history.replaceState(null,"","#"+state.cat) }catch(_){}
+  render(); window.scrollTo({top:0});
+});
+$("#main").addEventListener("click", e => {
+  const v=e.target.closest("[data-v]"); if(v){state.view=v.dataset.v; render(); return;}
+  const p=e.target.closest("[data-p]"); if(p){state.power=p.dataset.p; render();}
+});
+$("#q").addEventListener("input", e => { state.q=e.target.value.trim(); render(); });
+render();
+document.getElementById("tab-"+state.cat)?.scrollIntoView({inline:"center",block:"nearest"});
+</script>
+
+</body>
+</html>
