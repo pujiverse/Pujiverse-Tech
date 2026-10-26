@@ -97,6 +97,32 @@ main{padding-block:26px 60px}
 .tlitem p{margin:0;color:var(--muted);font-size:14px}
 .tlpart{position:relative;margin:14px 0 0 -28px;padding:6px 0 6px 28px;font:600 13px/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);background:var(--bg);scroll-margin-top:110px}
 .tlpart:first-child{margin-top:0}
+button.tlitem{display:block;width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer;transition:border-color .15s,transform .15s}
+button.tlitem:hover{border-color:var(--accent)}
+button.tlitem:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tlitem .more{display:inline-block;margin-top:8px;font:500 12px var(--mono);color:var(--accent)}
+#brief{width:min(720px,calc(100vw - 32px));max-height:min(88vh,900px);padding:0;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+#brief[open]{display:flex;flex-direction:column}
+#brief::backdrop{background:rgba(8,12,16,.62)}
+.bbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line)}
+.bx{border:1px solid var(--line);background:transparent;color:var(--ink);width:34px;height:34px;border-radius:6px;font-size:20px;line-height:1;cursor:pointer}
+.bx:hover{border-color:var(--accent);color:var(--accent)}
+.bbody{padding:18px 20px 22px;overflow-y:auto}
+.byr{font:600 34px/1 var(--display);color:var(--accent)}
+.bbody h2{font:600 24px/1.2 var(--display);margin:8px 0 6px;text-wrap:balance}
+.bsum{margin:0 0 16px;color:var(--muted)}
+.bmeta{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:0 0 18px}
+.bmeta div{background:var(--chip);border-radius:6px;padding:10px 12px}
+.bmeta dt{font:500 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.bmeta dd{margin:3px 0 0;font-size:14px;font-weight:500}
+.bbody section{border-left:3px solid var(--accent-soft);padding:2px 0 2px 14px;margin:0 0 16px}
+.bbody section h3{margin:0 0 4px;font:600 13px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--accent)}
+.bbody section p{margin:0;font-size:15px;line-height:1.6}
+.bwatch{display:inline-block;margin-top:4px;font:500 13px var(--body);color:var(--accent)}
+.bnav{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 20px;border-top:1px solid var(--line);font:12px var(--mono);color:var(--muted)}
+.bnav button{border:1px solid var(--line);background:var(--surface);color:var(--ink);font:500 13px var(--body);padding:8px 12px;border-radius:6px;cursor:pointer}
+.bnav button:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.bnav button:disabled{opacity:.4;cursor:default}
 .tljump{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
 .tljump a{font:500 12px var(--mono);padding:6px 10px;border:1px solid var(--line);border-radius:99px;color:var(--muted);text-decoration:none}
 .tljump a:hover{border-color:var(--accent);color:var(--accent)}
@@ -150,6 +176,21 @@ footer{border-top:1px solid var(--line);padding-block:20px 30px;color:var(--mute
 </footer>
 </div>
 
+<dialog id="brief" aria-labelledby="bTitle">
+  <div class="bbar"><span class="cat" id="bPart"></span><button type="button" class="bx" id="bClose" aria-label="Close briefing">×</button></div>
+  <div class="bbody">
+    <div class="byr" id="bYear"></div>
+    <h2 id="bTitle"></h2>
+    <p class="bsum" id="bSum"></p>
+    <dl class="bmeta"><div><dt>Who</dt><dd id="bWho"></dd></div><div><dt>Where</dt><dd id="bWhere"></dd></div></dl>
+    <section><h3>The problem</h3><p id="bProb"></p></section>
+    <section><h3>How the research went</h3><p id="bRes"></p></section>
+    <section><h3>What it led to</h3><p id="bImp"></p></section>
+    <a class="bwatch" id="bWatch" href="https://www.youtube.com/@pujiversetech" target="_blank" rel="noopener"></a>
+  </div>
+  <div class="bnav"><button type="button" id="bPrev">← Previous</button><span id="bPos"></span><button type="button" id="bNext">Next →</button></div>
+</dialog>
+
 <script src="data.js"></script>
 <script>
 
@@ -163,7 +204,7 @@ let state = {cat: ids.includes(location.hash.slice(1)) ? location.hash.slice(1) 
 $("#stats").innerHTML = `
   <div class="stat"><b>${CATEGORIES.length}</b><small>Categories</small></div>
   <div class="stat"><b>${total}</b><small>Gadget types</small></div>
-  <div class="stat"><b>1876</b><small>Timeline starts</small></div>`;
+  <div class="stat"><b>1660s</b><small>Timeline starts</small></div>`;
 
 function renderTabs(){
   $("#tabs").innerHTML = CATEGORIES.map(c =>
@@ -202,10 +243,13 @@ function render(){
     const parts = [...new Set(tl.map(e=>e.part).filter(Boolean))];
     const pid = p => "tlp-"+parts.indexOf(p);
     let last = null;
-    const rows = tl.map(e=>{
+    const rows = tl.map((e,i)=>{
       let h = "";
       if (e.part && e.part!==last){ last=e.part; h=`<h3 class="tlpart" id="${pid(e.part)}">${esc(e.part)}</h3>`; }
-      return h+`<div class="tlitem"><div class="yr">${esc(e.year)}</div><h4>${esc(e.title)}</h4><p>${esc(e.text||"")}</p></div>`;
+      const inner = `<div class="yr">${esc(e.year)}</div><h4>${esc(e.title)}</h4><p>${esc(e.text||"")}</p>`;
+      return h+(e.research
+        ? `<button type="button" class="tlitem tlbtn" data-ev="${i}" aria-haspopup="dialog">${inner}<span class="more">Read the briefing <span aria-hidden="true">→</span></span></button>`
+        : `<div class="tlitem">${inner}</div>`);
     }).join("");
     const jump = parts.length>1 ? `<nav class="tljump" aria-label="Jump to part">${parts.map(p=>`<a href="#${pid(p)}" data-jump="${pid(p)}">${esc(p)}</a>`).join("")}</nav>` : "";
     body = `${jump}<div class="tl">${rows}</div>`;
@@ -230,10 +274,42 @@ $("#tabs").addEventListener("click", e => {
 });
 $("#main").addEventListener("click", e => {
   const j=e.target.closest("[data-jump]"); if(j){e.preventDefault(); document.getElementById(j.dataset.jump)?.scrollIntoView({behavior:"smooth"}); return;}
+  const ev=e.target.closest("[data-ev]"); if(ev){openBrief(+ev.dataset.ev); return;}
   const v=e.target.closest("[data-v]"); if(v){state.view=v.dataset.v; render(); return;}
   const p=e.target.closest("[data-p]"); if(p){state.power=p.dataset.p; render();}
 });
 $("#q").addEventListener("input", e => { state.q=e.target.value.trim(); render(); });
+/* Timeline briefing panel */
+const dlg = $("#brief"); let bIdx = 0;
+function briefList(){ return (TIMELINES[state.cat]||[]).map((e,i)=>[e,i]).filter(([e])=>e.research); }
+function openBrief(i){
+  const list = briefList(), tl = TIMELINES[state.cat]||[], e = tl[i]; if(!e) return;
+  bIdx = i;
+  const pos = list.findIndex(([,j])=>j===i);
+  $("#bPart").textContent = e.part || "";
+  $("#bYear").textContent = e.year;
+  $("#bTitle").textContent = e.title;
+  $("#bSum").textContent = e.text || "";
+  $("#bWho").textContent = e.who || "—";
+  $("#bWhere").textContent = e.where || "—";
+  $("#bProb").textContent = e.problem || "";
+  $("#bRes").textContent = e.research || "";
+  $("#bImp").textContent = e.impact || "";
+  const part = (e.part||"").match(/Part (\d)/);
+  $("#bWatch").textContent = part ? `Watch Part ${part[1]} of The Story of the Phone on @pujiversetech →` : "Watch on @pujiversetech →";
+  $("#bPos").textContent = `${pos+1} of ${list.length}`;
+  $("#bPrev").disabled = pos<=0; $("#bNext").disabled = pos>=list.length-1;
+  dlg.querySelector(".bbody").scrollTop = 0;
+  if(!dlg.open) dlg.showModal();
+}
+function stepBrief(d){ const list = briefList(), pos = list.findIndex(([,j])=>j===bIdx), nx = list[pos+d]; if(nx) openBrief(nx[1]); }
+$("#bPrev").addEventListener("click", ()=>stepBrief(-1));
+$("#bNext").addEventListener("click", ()=>stepBrief(1));
+$("#bClose").addEventListener("click", ()=>dlg.close());
+dlg.addEventListener("click", e=>{ if(e.target===dlg) dlg.close(); });
+dlg.addEventListener("keydown", e=>{ if(e.key==="ArrowRight") stepBrief(1); if(e.key==="ArrowLeft") stepBrief(-1); });
+dlg.addEventListener("close", ()=>{ document.querySelector(`[data-ev="${bIdx}"]`)?.focus({preventScroll:true}); });
+
 render();
 document.getElementById("tab-"+state.cat)?.scrollIntoView({inline:"center",block:"nearest"});
 </script>
