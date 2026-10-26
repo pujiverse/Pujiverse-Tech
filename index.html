@@ -95,6 +95,11 @@ main{padding-block:26px 60px}
 .tlitem .yr{font:600 20px/1 var(--display);color:var(--accent)}
 .tlitem h4{margin:6px 0 4px;font:600 16px var(--body)}
 .tlitem p{margin:0;color:var(--muted);font-size:14px}
+.tlpart{position:relative;margin:14px 0 0 -28px;padding:6px 0 6px 28px;font:600 13px/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);background:var(--bg);scroll-margin-top:110px}
+.tlpart:first-child{margin-top:0}
+.tljump{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.tljump a{font:500 12px var(--mono);padding:6px 10px;border:1px solid var(--line);border-radius:99px;color:var(--muted);text-decoration:none}
+.tljump a:hover{border-color:var(--accent);color:var(--accent)}
 .soon{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:28px;display:grid;gap:14px;max-width:720px}
 .soon h3{font:600 22px/1.2 var(--display);margin:0;text-wrap:balance}
 .soon p{margin:0;color:var(--muted)}
@@ -194,7 +199,16 @@ function render(){
     body = `${powers.length>2 ? `<div class="filters" aria-label="Filter by power source">${powers.map(p=>`<button data-p="${p}" aria-pressed="${p===state.power}">${esc(p==="All"?"All":tagLabel(p))}</button>`).join("")}</div>`:""}
       <div class="grid">${items.map(i=>card(i)).join("")}</div>`;
   } else if (tl.length){
-    body = `<div class="tl">${tl.map(e=>`<div class="tlitem"><div class="yr">${esc(e.year)}</div><h4>${esc(e.title)}</h4><p>${esc(e.text||"")}</p></div>`).join("")}</div>`;
+    const parts = [...new Set(tl.map(e=>e.part).filter(Boolean))];
+    const pid = p => "tlp-"+parts.indexOf(p);
+    let last = null;
+    const rows = tl.map(e=>{
+      let h = "";
+      if (e.part && e.part!==last){ last=e.part; h=`<h3 class="tlpart" id="${pid(e.part)}">${esc(e.part)}</h3>`; }
+      return h+`<div class="tlitem"><div class="yr">${esc(e.year)}</div><h4>${esc(e.title)}</h4><p>${esc(e.text||"")}</p></div>`;
+    }).join("");
+    const jump = parts.length>1 ? `<nav class="tljump" aria-label="Jump to part">${parts.map(p=>`<a href="#${pid(p)}" data-jump="${pid(p)}">${esc(p)}</a>`).join("")}</nav>` : "";
+    body = `${jump}<div class="tl">${rows}</div>`;
   } else {
     const first = c.id==="phones" ? "From Alexander Graham Bell's telephone in 1876 to today's foldable, satellite-connected smartphones." : `The full story of ${c.name.toLowerCase()}, from the first invention to what comes next.`;
     body = `<div class="soon"><span class="cat">Timeline · in production</span>
@@ -215,6 +229,7 @@ $("#tabs").addEventListener("click", e => {
   render(); window.scrollTo({top:0});
 });
 $("#main").addEventListener("click", e => {
+  const j=e.target.closest("[data-jump]"); if(j){e.preventDefault(); document.getElementById(j.dataset.jump)?.scrollIntoView({behavior:"smooth"}); return;}
   const v=e.target.closest("[data-v]"); if(v){state.view=v.dataset.v; render(); return;}
   const p=e.target.closest("[data-p]"); if(p){state.power=p.dataset.p; render();}
 });

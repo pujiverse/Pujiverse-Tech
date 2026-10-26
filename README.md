@@ -7,6 +7,6 @@ Live: https://tech.pujiverse.com
 ## Editing content
 All content lives in `data.js`:
 - `CATEGORIES` — each category tab, its intro, planned timeline eras, and gadget cards `[name, power, about, examples]` (power: `Battery`, `Plug-in`, `Both`, or `Software`).
-- `TIMELINES` — timeline events per category: `{ year: "1876", title: "...", text: "..." }`.
+- `TIMELINES` — timeline events per category: `{ part: "Part 1 · ...", year: "1876", title: "...", text: "..." }`. `part` is optional; consecutive entries with the same part are grouped under one heading, with jump links at the top.
 
 Plain HTML/CSS/JS, no build step. Pushing to `main` redeploys on Vercel.
