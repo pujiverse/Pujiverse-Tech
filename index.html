@@ -104,12 +104,23 @@ main{padding-block:26px 60px}
 footer{border-top:1px solid var(--line);padding-block:20px 30px;color:var(--muted);font-size:13px;display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:space-between}
 
 @media (max-width:560px){.railrow{flex-direction:column;align-items:stretch}.search{width:100%}.tabs{width:100%}}
+
+/* Top bar with link back to pujiverse.com */
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:14px 0}
+.home{display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink);font:500 13px/1 var(--body);border:1px solid var(--line);background:var(--surface);padding:9px 13px;border-radius:6px}
+.home:hover{border-color:var(--accent);color:var(--accent)}
+.home svg{width:15px;height:15px;flex:none}
+.topbar .net{font:500 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 </style>
 </head>
 <body>
 
 
 <div class="wrap">
+<div class="topbar">
+  <a class="home" href="https://www.pujiverse.com/" aria-label="Back to the Pujiverse home page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>Pujiverse Home</a>
+  <span class="net">Pujiverse Network</span>
+</div>
 <header class="mast">
   <div class="brand">
     <div class="eyebrow"><span class="led" aria-hidden="true"></span>@pujiversetech · Past · Present · Future</div>
@@ -129,7 +140,7 @@ footer{border-top:1px solid var(--line);padding-block:20px 30px;color:var(--mute
 <main id="main"></main>
 
 <footer>
-  <span>Pujiverse Tech · part of the Pujiverse Network</span>
+  <span>Pujiverse Tech · part of the <a href="https://www.pujiverse.com/">Pujiverse Network</a></span>
   <span>Watch the series on YouTube: <a href="https://www.youtube.com/@pujiversetech" target="_blank" rel="noopener">@pujiversetech</a></span>
 </footer>
 </div>
